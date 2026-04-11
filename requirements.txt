@@ -5,3 +5,9 @@ timm
 torchmetrics
 tqdm
 pillow
+litert_torch
+numpy
+mediapipe
+opencv-python
+tflite-support
+flatbuffers
