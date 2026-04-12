@@ -14,7 +14,8 @@ image_path = "src/test/images/test.jpg"
 options = ImageClassifierOptions(
     base_options=BaseOptions(model_asset_path=str(model_path)),
     max_results=5,
-    running_mode=VisionRunningMode.IMAGE)
+    running_mode=VisionRunningMode.IMAGE,
+)
 
 with ImageClassifier.create_from_options(options) as classifier:
     image = Image.open(image_path)
