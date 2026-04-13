@@ -46,7 +46,7 @@ def main():
 
     os.makedirs("checkpoints", exist_ok=True)
 
-    num_epochs = 10
+    num_epochs = 5
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0

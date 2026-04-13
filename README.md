@@ -1,6 +1,9 @@
 # Fine-tune EfficientNet
 
-Fine-tune a pre-trained **TF-EfficientNet-Lite4** model on a custom image dataset.
+### 1. Fine-tune a pre-trained **TF-EfficientNet-Lite4** model on a custom image dataset.
+
+> [!NOTE]
+> It's recommended to use Python 3.11.x
 
 1. Create a `dataset` folder.
 2. Create subfolders (example: dog, cat, fish, bird) and populate them.
@@ -8,12 +11,12 @@ Fine-tune a pre-trained **TF-EfficientNet-Lite4** model on a custom image datase
 
 When its finished it will return a checkpoint file.
 
-### Create a tflite model
+### 2. Create a tflite model
 1. Run `python src/convert_to_tflite.py`.
 
 This will return a tflite and labels.txt file.
 
-### Add metadata to tflite model
+### 3. Add metadata to tflite model
 1. Run `python src/add_metadata_to_tflite.py`.
 
 
