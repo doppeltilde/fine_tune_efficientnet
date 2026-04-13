@@ -8,3 +8,4 @@ pillow==12.2.0
 numpy==2.4.4
 mediapipe==0.10.33
 flatbuffers==25.12.19
+tflite-support==0.4.4
