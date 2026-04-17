@@ -25,4 +25,7 @@ with ImageClassifier.create_from_options(options) as classifier:
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=numpy_image)
         classification_result = classifier.classify(mp_image)
 
-        print(classification_result.classifications)
+        for classification in classification_result.classifications:
+            print(image_path)
+            for category in classification.categories:
+                print(f"{category.category_name}: {category.score:.10f}")

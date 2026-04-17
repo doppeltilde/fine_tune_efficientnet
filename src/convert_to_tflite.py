@@ -2,10 +2,8 @@ import os
 import torch
 import timm
 import litert_torch
-from torchvision import transforms
-from torchvision.datasets import ImageFolder
-import traceback
 from pathlib import Path
+import traceback
 
 script_dir = Path(__file__).parent.resolve()
 
@@ -24,31 +22,18 @@ class NormalizedModel(torch.nn.Module):
         return self.model(x)
 
 
-class LogitNormalizer(torch.nn.Module):
-    def __init__(self, model):
+class ProbabilityModel(torch.nn.Module):
+    def __init__(self, base_model):
         super().__init__()
-        self.model = model
-        self.softmax = torch.nn.Softmax(dim=1)
+        self.normalized = NormalizedModel(base_model)
 
     def forward(self, x):
-        logits = self.model(x)
-        return self.softmax(logits)
+        logits = self.normalized(x)
+        return torch.nn.functional.softmax(logits, dim=1)
 
 
 def main():
     print("Loading fine-tuned model for conversion...")
-
-    transform = transforms.Compose(
-        [
-            transforms.Resize(456),
-            transforms.CenterCrop(380),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-
-    dataset = ImageFolder(root="dataset", transform=transform)
-    class_names = dataset.classes
 
     checkpoint_path = script_dir / "tflite/efficientnet_lite4_final_finetuned.pth"
     checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
@@ -64,10 +49,9 @@ def main():
     )
 
     base_model.load_state_dict(checkpoint["model_state_dict"])
-
     print("Finetuned model loaded successfully.")
 
-    labels_path = Path(script_dir / "tflite/labels.txt")
+    labels_path = script_dir / "tflite/labels.txt"
     labels_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(labels_path, "w", encoding="utf-8") as f:
@@ -77,13 +61,13 @@ def main():
     print(f"labels.txt created successfully at: {labels_path}")
     print(f"Total labels written: {len(class_names)}")
 
-    model = LogitNormalizer(NormalizedModel(base_model))
+    model = ProbabilityModel(base_model)
     model.eval()
 
     print("\nConverting model to TensorFlow Lite format...")
 
     try:
-        sample_input = torch.randn(1, 380, 380, 3)
+        sample_input = torch.randint(0, 256, (1, 380, 380, 3), dtype=torch.float32)
 
         edge_model = litert_torch.convert(model, (sample_input,))
 
